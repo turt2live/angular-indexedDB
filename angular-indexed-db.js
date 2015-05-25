@@ -115,7 +115,7 @@
         createDatabaseConnection = function() {
           var dbReq, deferred;
           deferred = $q.defer();
-          dbReq = indexedDB.open(dbName, dbVersion || 1);
+          dbReq = indexedDB.open(dbName, parseInt(dbVersion) || 1);
           dbReq.onsuccess = function() {
             db = dbReq.result;
             $rootScope.$apply(function() {
