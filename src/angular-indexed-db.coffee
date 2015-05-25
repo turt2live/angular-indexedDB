@@ -102,7 +102,7 @@ angular.module('indexedDB', []).provider '$indexedDB', ->
 
     createDatabaseConnection = ->
       deferred = $q.defer()
-      dbReq = indexedDB.open(dbName, dbVersion or 1)
+      dbReq = indexedDB.open(dbName, parseInt(dbVersion) || 1)
       dbReq.onsuccess = ->
         db = dbReq.result
         $rootScope.$apply ->
