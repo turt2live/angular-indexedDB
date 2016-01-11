@@ -29,7 +29,7 @@ bower install --save angular-indexed-db
 And add the following line to your html file, for example `index.html`:
 
 ```html
-<script src="components/angular-indexed-db/angular-indexed-db.js"></script>
+<script src="bower_components/angular-indexedDB/angular-indexed-db.js"></script>
 ```
 
 
