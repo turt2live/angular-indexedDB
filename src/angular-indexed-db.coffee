@@ -52,7 +52,7 @@ angular.module('indexedDB', []).provider '$indexedDB', ->
     if e.target.readyState is readyState.pending
       "Error: Operation pending"
     else
-      (e.target.webkitErrorMessage || e.target.error.message || e.target.errorCode)
+      (e.target.webkitErrorMessage || e.target.error.message || e.target.error.name || e.target.errorCode)
 
   appendResultsToPromise = (promise, results) ->
     if results isnt undefined
@@ -111,10 +111,12 @@ angular.module('indexedDB', []).provider '$indexedDB', ->
         return
       dbReq.onblocked = dbReq.onerror = rejectWithError(deferred)
       dbReq.onupgradeneeded = (event) ->
+        oldVer = event.oldVersion
+        oldVer = 0 if oldVer > Math.pow(2, 62) ## Safari 8 fix.
         db = event.target.result
         tx = event.target.transaction
-        $log.log "$indexedDB: Upgrading database '#{db.name}' from version #{event.oldVersion} to version #{event.newVersion} ..."
-        applyNeededUpgrades event.oldVersion, event, db, tx, $log
+        $log.log "$indexedDB: Upgrading database '#{db.name}' from version #{oldVer} to version #{event.newVersion} ..."
+        applyNeededUpgrades oldVer, event, db, tx, $log
         return
       deferred.promise
 
