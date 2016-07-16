@@ -164,10 +164,16 @@ angular.module('indexedDB', []).provider '$indexedDB', ->
             @defer.resolve("Transaction Completed")
         @transaction.onabort = (error) =>
           $rootScope.$apply =>
-            @defer.reject("Transaction Aborted", error)
+            @defer.reject(
+              title: "Transaction Aborted"
+              error: error
+            )
         @transaction.onerror = (error) =>
           $rootScope.$apply =>
-            @defer.reject("Transaction Error", error)
+            @defer.reject(
+              title: "Transaction Error"
+              error: error
+            )
         addTransaction(this)
 
       objectStore: (storeName) ->

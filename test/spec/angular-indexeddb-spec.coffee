@@ -314,7 +314,7 @@ describe "$indexedDB", ->
           .then(successCb)
         .catch (error) ->
           #We expect the overall transaction to also fail
-          expect(error).toEqual("Transaction Error")
+          expect(error.title).toEqual("Transaction Error")
           return
         .finally ->
           expect(successCb).not.toHaveBeenCalled()
