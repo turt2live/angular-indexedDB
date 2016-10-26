@@ -56,7 +56,7 @@
       if (e.target.readyState === readyState.pending) {
         return "Error: Operation pending";
       } else {
-        return e.target.webkitErrorMessage || e.target.error.message || e.target.errorCode;
+        return e.target.webkitErrorMessage || e.target.error.message || e.target.error.name || e.target.errorCode;
       }
     };
     appendResultsToPromise = function(promise, results) {
@@ -124,11 +124,15 @@
           };
           dbReq.onblocked = dbReq.onerror = rejectWithError(deferred);
           dbReq.onupgradeneeded = function(event) {
-            var tx;
+            var oldVer, tx;
+            oldVer = event.oldVersion;
+            if (oldVer > Math.pow(2, 62)) {
+              oldVer = 0;
+            }
             db = event.target.result;
             tx = event.target.transaction;
-            $log.log("$indexedDB: Upgrading database '" + db.name + "' from version " + event.oldVersion + " to version " + event.newVersion + " ...");
-            applyNeededUpgrades(event.oldVersion, event, db, tx, $log);
+            $log.log("$indexedDB: Upgrading database '" + db.name + "' from version " + oldVer + " to version " + event.newVersion + " ...");
+            applyNeededUpgrades(oldVer, event, db, tx, $log);
           };
           return deferred.promise;
         };
@@ -199,14 +203,20 @@
             this.transaction.onabort = (function(_this) {
               return function(error) {
                 return $rootScope.$apply(function() {
-                  return _this.defer.reject("Transaction Aborted", error);
+                  return _this.defer.reject({
+                    title: "Transaction Aborted",
+                    error: error
+                  });
                 });
               };
             })(this);
             this.transaction.onerror = (function(_this) {
               return function(error) {
                 return $rootScope.$apply(function() {
-                  return _this.defer.reject("Transaction Error", error);
+                  return _this.defer.reject({
+                    title: "Transaction Error",
+                    error: error
+                  });
                 });
               };
             })(this);
